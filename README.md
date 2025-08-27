@@ -65,8 +65,8 @@ VeriTix/
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/veritix.git
-cd veritix
+git clone https://github.com/Darkartt/VeriTix.git
+cd VeriTix
 ```
 
 ### 2. Smart Contract Setup
@@ -870,14 +870,14 @@ This project is licensed under the MIT License - see the [LICENSE](./LICENSE) fi
 - **🐦 Twitter**: [@VeriTixOfficial](https://twitter.com/veritixofficial)
 - **💬 Discord**: [VeriTix Community](https://discord.gg/veritix)
 - **📖 Documentation**: [docs.veritix.com](https://docs.veritix.com)
-- **🐛 Issues**: [GitHub Issues](https://github.com/your-username/veritix/issues)
+- **🐛 Issues**: [GitHub Issues](https://github.com/Darkartt/VeriTix/issues)
 
 ---
 
 <div align="center">
 
-**Built with ❤️ by the VeriTix Team**
+**Built with ❤️ by [Darkartt](https://github.com/Darkartt/)**
 
-[⭐ Star us on GitHub](https://github.com/your-username/veritix) • [🔗 Follow on Twitter](https://twitter.com/veritixofficial) • [📖 Read the Docs](https://docs.veritix.com)
+**[⭐ Star this project](https://github.com/Darkartt/VeriTix) • [👨‍💻 Follow Darkartt](https://github.com/Darkartt/)**
 
 </div>
