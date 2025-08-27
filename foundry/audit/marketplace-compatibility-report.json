@@ -1,0 +1,128 @@
+{
+  "timestamp": "2025-08-27T12:58:03.751Z",
+  "summary": {
+    "overallScore": 76,
+    "status": "ACCEPTABLE",
+    "totalRecommendations": 3,
+    "criticalIssues": 0
+  },
+  "interfaceCompliance": {
+    "erc165": true,
+    "erc721": false,
+    "erc721Metadata": true,
+    "erc721Enumerable": true,
+    "customInterfaces": []
+  },
+  "metadataStandards": {
+    "hasBaseURI": true,
+    "hasTokenURI": true,
+    "hasMetadataStructure": true,
+    "hasCollectionMetadata": true,
+    "opensea": {
+      "contractURI": false,
+      "royaltyInfo": false,
+      "operatorFilter": false
+    }
+  },
+  "transferMechanisms": {
+    "hasTransferRestrictions": true,
+    "hasControlledResale": true,
+    "hasApprovalMechanism": true,
+    "hasSafeTransfer": false,
+    "transferMethod": "controlled"
+  },
+  "marketplaceCompatibility": {
+    "opensea": {
+      "compatible": true,
+      "issues": [
+        "Missing contractURI for collection metadata",
+        "Missing royalty information (EIP-2981)",
+        "Custom transfer mechanism - requires special integration"
+      ],
+      "score": 8
+    },
+    "looksrare": {
+      "compatible": false,
+      "issues": [
+        "Transfer restrictions may prevent marketplace integration",
+        "Missing royalty support"
+      ],
+      "score": 5
+    },
+    "foundation": {
+      "compatible": false,
+      "issues": [
+        "Custom transfer restrictions not compatible"
+      ],
+      "score": 4
+    },
+    "superrare": {
+      "compatible": false,
+      "issues": [
+        "Custom transfer mechanism not supported"
+      ],
+      "score": 4
+    }
+  },
+  "recommendations": [
+    {
+      "severity": "MEDIUM",
+      "category": "OpenSea Compatibility",
+      "issue": "Missing contractURI for collection metadata",
+      "recommendation": "Implement contractURI function for collection-level metadata"
+    },
+    {
+      "severity": "LOW",
+      "category": "Marketplace Features",
+      "issue": "Missing royalty information (EIP-2981)",
+      "recommendation": "Consider implementing EIP-2981 for automatic royalty distribution"
+    },
+    {
+      "severity": "INFO",
+      "category": "Transfer Mechanisms",
+      "issue": "Custom resale mechanism detected",
+      "recommendation": "Ensure marketplace integration documentation explains custom transfer flow"
+    }
+  ],
+  "marketplaceReadiness": {
+    "opensea": {
+      "ready": true,
+      "score": "8/10",
+      "status": "READY",
+      "blockers": [],
+      "warnings": [
+        "Missing contractURI for collection metadata",
+        "Missing royalty information (EIP-2981)",
+        "Custom transfer mechanism - requires special integration"
+      ]
+    },
+    "looksrare": {
+      "ready": false,
+      "score": "5/10",
+      "status": "NEEDS_WORK",
+      "blockers": [],
+      "warnings": [
+        "Transfer restrictions may prevent marketplace integration",
+        "Missing royalty support"
+      ]
+    },
+    "foundation": {
+      "ready": false,
+      "score": "4/10",
+      "status": "NEEDS_WORK",
+      "blockers": [],
+      "warnings": [
+        "Custom transfer restrictions not compatible"
+      ]
+    },
+    "superrare": {
+      "ready": false,
+      "score": "4/10",
+      "status": "NEEDS_WORK",
+      "blockers": [],
+      "warnings": [
+        "Custom transfer mechanism not supported"
+      ]
+    }
+  }
+}

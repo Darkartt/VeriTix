@@ -1,0 +1,76 @@
+--- a/foundry/src/VeriTixEvent.sol
++++ b/foundry/src/VeriTixEvent.sol
+@@ -45,6 +45,12 @@ contract VeriTixEvent is ERC721, Ownable, ReentrancyGuard, IVeriTixEvent {
+     /// @dev Mapping from token ID to check-in status
+     mapping(uint256 => bool) public checkedIn;
+ 
++    /// @dev Mapping from address to number of tickets purchased
++    mapping(address => uint256) public purchaseCount;
++
++    /// @dev Maximum number of tickets per address
++    uint256 public constant MAX_TICKETS_PER_ADDRESS = 20;
++
+     // ============ CONSTRUCTOR ============
+ 
+     /**
+@@ -285,6 +291,11 @@ contract VeriTixEvent is ERC721, Ownable, ReentrancyGuard, IVeriTixEvent {
+         uint256 _ticketPrice = ticketPrice;
+         uint256 _maxSupply = maxSupply;
+ 
++        // Check purchase limit
++        if (purchaseCount[msg.sender] >= MAX_TICKETS_PER_ADDRESS) {
++            revert PurchaseLimitExceeded(msg.sender, MAX_TICKETS_PER_ADDRESS);
++        }
++
+         // Check for zero payment (gas optimized: single comparison)
+         if (msg.value != _ticketPrice) {
+             revert IncorrectPayment(msg.value, _ticketPrice);
+@@ -302,6 +313,7 @@ contract VeriTixEvent is ERC721, Ownable, ReentrancyGuard, IVeriTixEvent {
+             tokenId = ++currentId;
+             _currentTokenId = currentId;
+             _totalSupply++;
++            purchaseCount[msg.sender]++;
+         }
+ 
+         // Mint the NFT to the buyer
+@@ -315,6 +327,16 @@ contract VeriTixEvent is ERC721, Ownable, ReentrancyGuard, IVeriTixEvent {
+         return tokenId;
+     }
+ 
++    /**
++     * @dev Get remaining purchase limit for an address
++     * @param buyer The address to check
++     * @return remaining Number of tickets the address can still purchase
++     */
++    function getRemainingPurchaseLimit(address buyer) external view returns (uint256 remaining) {
++        uint256 purchased = purchaseCount[buyer];
++        return purchased >= MAX_TICKETS_PER_ADDRESS ? 0 : MAX_TICKETS_PER_ADDRESS - purchased;
++    }
++
+     /**
+      * @dev Resell a ticket through the controlled resale mechanism
+      * @param tokenId The ID of the ticket to resell
+--- a/foundry/src/interfaces/IVeriTixEvent.sol
++++ b/foundry/src/interfaces/IVeriTixEvent.sol
+@@ -45,6 +45,7 @@ interface IVeriTixEvent is IERC165 {
+     error TicketAlreadyUsed();
+     error EventAlreadyCancelled();
+     error EventNotCancelled();
++    error PurchaseLimitExceeded(address buyer, uint256 limit);
+ 
+     // ============ EVENTS ============
+ 
+@@ -120,6 +121,13 @@ interface IVeriTixEvent is IERC165 {
+      */
+     function isCheckedIn(uint256 tokenId) external view returns (bool isCheckedIn_);
+ 
++    /**
++     * @dev Get remaining purchase limit for an address
++     * @param buyer The address to check
++     * @return remaining Number of tickets the address can still purchase
++     */
++    function getRemainingPurchaseLimit(address buyer) external view returns (uint256 remaining);
++
+     // ============ CORE FUNCTIONS ============
+ 
+     /**

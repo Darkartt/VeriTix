@@ -108,12 +108,14 @@ Visit `http://localhost:3000` to see VeriTix in action! 🎉
 ## 🛠️ Technology Stack
 
 ### Smart Contracts
+
 - **Solidity 0.8.25** - Smart contract language
 - **Foundry** - Development framework
 - **OpenZeppelin** - Security-audited contract libraries
 - **ERC721** - NFT standard for tickets
 
 ### Frontend
+
 - **Next.js 15** - React framework with App Router
 - **TypeScript** - Type-safe development
 - **Tailwind CSS** - Utility-first styling
@@ -122,6 +124,7 @@ Visit `http://localhost:3000` to see VeriTix in action! 🎉
 - **RainbowKit** - Wallet connection UI
 
 ### Development & Testing
+
 - **Foundry** - Smart contract testing
 - **Jest** - Frontend unit testing
 - **React Testing Library** - Component testing
@@ -133,24 +136,28 @@ Visit `http://localhost:3000` to see VeriTix in action! 🎉
 ## 📋 Features Deep Dive
 
 ### 🎫 NFT Ticketing System
+
 - Each ticket is a unique ERC721 NFT
 - Immutable ownership records on blockchain
 - Built-in metadata with event details
 - QR code generation for easy check-in
 
 ### 🛡️ Anti-Scalping Mechanisms
+
 - **Price Caps**: Maximum resale price (2x original)
 - **Transfer Restrictions**: Controlled secondary market
 - **Organizer Royalties**: 5% automatic royalties
 - **Transparent Pricing**: All prices visible on-chain
 
 ### 💰 Smart Refund System
+
 - **Automatic Processing**: No manual intervention needed
 - **Event Cancellation**: Full refunds for cancelled events
 - **Secure Transfers**: Audited refund mechanism
 - **Gas Optimized**: Efficient batch operations
 
 ### 🎨 Modern User Experience
+
 - **Glassmorphism Design**: Beautiful, modern interface
 - **Responsive Layout**: Works on all devices
 - **Smooth Animations**: 60fps performance optimized
@@ -171,6 +178,7 @@ VeriTix has undergone comprehensive security auditing:
 [📋 View Full Security Audit](./AUDIT_CERTIFICATE.md)
 
 ### Security Features
+
 - **Reentrancy Protection**: Checks-Effects-Interactions pattern
 - **Access Control**: Role-based permissions
 - **Input Validation**: Comprehensive parameter checking
@@ -221,12 +229,14 @@ event TicketRefunded(uint256 indexed tokenId, address recipient, uint256 amount)
 ### Frontend Components
 
 #### Key Components
+
 - **ConnectButton**: Wallet connection interface
 - **EventCard**: Display event information
 - **TicketCard**: Show owned tickets with QR codes
 - **BuyTicketButton**: Purchase ticket functionality
 
 #### Hooks
+
 - **useAccount**: Get connected wallet info
 - **useReadContract**: Read blockchain data
 - **useWriteContract**: Execute transactions
@@ -243,6 +253,7 @@ forge test -vvv
 ```
 
 **Test Coverage:**
+
 - ✅ Event creation and management
 - ✅ Ticket purchasing and validation
 - ✅ Refund system functionality
@@ -259,6 +270,7 @@ npm run test:coverage
 ```
 
 **Test Suites:**
+
 - ✅ Component rendering tests
 - ✅ User interaction tests
 - ✅ Web3 integration tests
@@ -343,18 +355,21 @@ We welcome contributions! Please see our [Contributing Guidelines](./CONTRIBUTIN
 ### Roadmap
 
 #### Phase 1 (Current) ✅
+
 - [x] Core smart contract development
 - [x] Frontend application
 - [x] Security audit and fixes
 - [x] Comprehensive testing
 
 #### Phase 2 (Q1 2025) 🚧
+
 - [ ] Mainnet deployment
 - [ ] Advanced analytics dashboard
 - [ ] Multi-chain support (Polygon, Arbitrum)
 - [ ] Mobile application
 
 #### Phase 3 (Q2 2025) 📋
+
 - [ ] DAO governance implementation
 - [ ] Advanced marketplace features
 - [ ] Integration with major event platforms

@@ -1,0 +1,260 @@
+{
+  "metadata": {
+    "generated_at": "2025-08-27T12:43:28.083Z",
+    "version": "1.0.0",
+    "analysis_type": "Gas Optimization Analysis"
+  },
+  "gas_measurements": {
+    "createEvent_single": {
+      "gas": 2431533,
+      "priority": "HIGH"
+    },
+    "createEvent_batch_3": {
+      "gas": 7204317,
+      "priority": "HIGH"
+    },
+    "createEvent_batch_avg": {
+      "gas": 2401439,
+      "priority": "HIGH"
+    },
+    "mintTicket_first": {
+      "gas": 158434,
+      "priority": "HIGH"
+    },
+    "mintTicket_subsequent": {
+      "gas": 98134,
+      "priority": "HIGH"
+    },
+    "mintTicket_average": {
+      "gas": 110194,
+      "priority": "HIGH"
+    },
+    "resaleTicket": {
+      "gas": 101699,
+      "priority": "MEDIUM"
+    },
+    "refundTicket": {
+      "gas": 54236,
+      "priority": "MEDIUM"
+    },
+    "checkIn": {
+      "gas": 56036,
+      "priority": "LOW"
+    },
+    "getEventInfo": {
+      "gas": 7998,
+      "priority": "LOW"
+    },
+    "getTicketMetadata": {
+      "gas": 13345,
+      "priority": "LOW"
+    },
+    "getCollectionMetadata": {
+      "gas": 8918,
+      "priority": "LOW"
+    },
+    "tokenURI": {
+      "gas": 4187,
+      "priority": "LOW"
+    },
+    "batch_efficiency_savings": {
+      "gas": 87700,
+      "priority": "MEDIUM"
+    },
+    "batch_efficiency_percentage": {
+      "gas": 1,
+      "priority": "MEDIUM"
+    },
+    "sequential_mints_10": {
+      "gas": 1032910,
+      "priority": "MEDIUM"
+    },
+    "mapping_reads_10": {
+      "gas": 17655,
+      "priority": "LOW"
+    }
+  },
+  "optimization_opportunities": [
+    {
+      "type": "HIGH_GAS_FUNCTION",
+      "function": "createEvent_single",
+      "current_gas": 2431533,
+      "priority": "HIGH",
+      "potential_savings": 243153,
+      "recommendations": [
+        "Cache immutable variables",
+        "Use unchecked arithmetic for safe operations",
+        "Optimize storage operations",
+        "Minimize external calls"
+      ]
+    },
+    {
+      "type": "HIGH_GAS_FUNCTION",
+      "function": "createEvent_batch_3",
+      "current_gas": 7204317,
+      "priority": "HIGH",
+      "potential_savings": 720431,
+      "recommendations": [
+        "Cache immutable variables",
+        "Use unchecked arithmetic for safe operations",
+        "Optimize storage operations",
+        "Minimize external calls"
+      ]
+    },
+    {
+      "type": "HIGH_GAS_FUNCTION",
+      "function": "createEvent_batch_avg",
+      "current_gas": 2401439,
+      "priority": "HIGH",
+      "potential_savings": 240143,
+      "recommendations": [
+        "Cache immutable variables",
+        "Use unchecked arithmetic for safe operations",
+        "Optimize storage operations",
+        "Minimize external calls"
+      ]
+    },
+    {
+      "type": "HIGH_GAS_FUNCTION",
+      "function": "mintTicket_first",
+      "current_gas": 158434,
+      "priority": "HIGH",
+      "potential_savings": 15843,
+      "recommendations": [
+        "Cache immutable variables",
+        "Use unchecked arithmetic for safe operations",
+        "Optimize storage operations",
+        "Minimize external calls"
+      ]
+    },
+    {
+      "type": "HIGH_GAS_FUNCTION",
+      "function": "mintTicket_average",
+      "current_gas": 110194,
+      "priority": "HIGH",
+      "potential_savings": 11019,
+      "recommendations": [
+        "Cache immutable variables",
+        "Use unchecked arithmetic for safe operations",
+        "Optimize storage operations",
+        "Minimize external calls"
+      ]
+    },
+    {
+      "type": "HIGH_GAS_FUNCTION",
+      "function": "resaleTicket",
+      "current_gas": 101699,
+      "priority": "HIGH",
+      "potential_savings": 10169,
+      "recommendations": [
+        "Cache immutable variables",
+        "Use unchecked arithmetic for safe operations",
+        "Optimize storage operations",
+        "Minimize external calls"
+      ]
+    },
+    {
+      "type": "HIGH_GAS_FUNCTION",
+      "function": "sequential_mints_10",
+      "current_gas": 1032910,
+      "priority": "HIGH",
+      "potential_savings": 103291,
+      "recommendations": [
+        "Cache immutable variables",
+        "Use unchecked arithmetic for safe operations",
+        "Optimize storage operations",
+        "Minimize external calls"
+      ]
+    },
+    {
+      "type": "BATCH_OPTIMIZATION",
+      "function": "batchCreateEvents",
+      "current_savings_percentage": 1,
+      "target_savings_percentage": 25,
+      "priority": "MEDIUM",
+      "potential_additional_savings": 1080647,
+      "recommendations": [
+        "Optimize batch processing loops",
+        "Reduce redundant storage operations",
+        "Implement more efficient batch validation"
+      ]
+    },
+    {
+      "type": "STORAGE_OPTIMIZATION",
+      "function": "mintTicket",
+      "current_gas": 110194,
+      "target_gas": 80000,
+      "priority": "MEDIUM",
+      "potential_savings": 30194,
+      "recommendations": [
+        "Implement struct packing for Event state variables",
+        "Use smaller data types where appropriate",
+        "Optimize storage slot usage"
+      ]
+    }
+  ],
+  "quantified_savings": [
+    {
+      "function": "mintTicket",
+      "current_gas": 110194,
+      "optimization_savings": 8815,
+      "annual_transactions": 10000,
+      "annual_gas_savings": 88150000,
+      "implementation": "Cache immutable variables, use unchecked arithmetic"
+    },
+    {
+      "function": "createEvent",
+      "current_gas": 2431533,
+      "optimization_savings": 291783,
+      "annual_transactions": 500,
+      "annual_gas_savings": 145891500,
+      "implementation": "Optimize struct packing, reduce storage operations"
+    },
+    {
+      "function": "resaleTicket",
+      "current_gas": 101699,
+      "optimization_savings": 6101,
+      "annual_transactions": 2000,
+      "annual_gas_savings": 12202000,
+      "implementation": "Optimize validation order, cache calculations"
+    }
+  ],
+  "summary": {
+    "total_functions_analyzed": 17,
+    "high_priority_optimizations": 7,
+    "medium_priority_optimizations": 2,
+    "total_annual_gas_savings": 246243500,
+    "estimated_eth_savings_per_year": "4.9249"
+  },
+  "recommendations": [
+    {
+      "priority": "HIGH",
+      "title": "Function-Level Optimizations",
+      "description": "Implement caching and arithmetic optimizations in high-frequency functions",
+      "estimated_savings": "8,000-30,000 gas per function call",
+      "functions": [
+        "createEvent",
+        "mintTicket",
+        "resaleTicket"
+      ]
+    },
+    {
+      "priority": "MEDIUM",
+      "title": "Batch Operation Enhancement",
+      "description": "Improve batch processing efficiency to achieve >20% savings",
+      "estimated_savings": "1,000,000+ gas per large batch operation",
+      "functions": [
+        "batchCreateEvents"
+      ]
+    },
+    {
+      "priority": "MEDIUM",
+      "title": "Storage Layout Optimization",
+      "description": "Implement struct packing to reduce deployment and operation costs",
+      "estimated_savings": "60,000-100,000 gas per deployment",
+      "functions": [
+        "All contract deployments"
+      ]
+    }
+  ]
+}

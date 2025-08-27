@@ -1,0 +1,79 @@
+--- a/foundry/src/VeriTixFactory.sol
++++ b/foundry/src/VeriTixFactory.sol
+@@ -35,6 +35,12 @@ contract VeriTixFactory is IVeriTixFactory, Ownable, ReentrancyGuard {
+     /// @dev Maximum number of events per organizer
+     uint256 public maxEventsPerOrganizer = VeriTixTypes.MAX_EVENTS_PER_ORGANIZER;
+     
++    /// @dev Maximum batch size for DoS protection
++    uint256 public constant MAX_BATCH_SIZE = 5;
++    uint256 public constant ESTIMATED_GAS_PER_EVENT = 2500000;
++    uint256 public constant GAS_BUFFER = 1000000;
++    
+     // ============ CONSTRUCTOR ============
+     
+     /**
+@@ -180,12 +186,22 @@ contract VeriTixFactory is IVeriTixFactory, Ownable, ReentrancyGuard {
+         if (length == 0) {
+             revert EmptyBatchArray();
+         }
+-        if (length > 10) { // Limit batch size to prevent gas issues
+-            revert BatchSizeTooLarge(length, 10);
++        if (length > MAX_BATCH_SIZE) {
++            revert BatchSizeTooLarge(length, MAX_BATCH_SIZE);
++        }
++        
++        // Gas estimation and protection
++        uint256 estimatedGas = length * ESTIMATED_GAS_PER_EVENT;
++        if (gasleft() < estimatedGas + GAS_BUFFER) {
++            revert InsufficientGasForBatch(gasleft(), estimatedGas + GAS_BUFFER);
+         }
+         
+         eventContracts = new address[](length);
+         
+         for (uint256 i = 0; i < length; i++) {
++            // Gas check during iteration
++            if (gasleft() < ESTIMATED_GAS_PER_EVENT + GAS_BUFFER) {
++                revert InsufficientGasRemaining(i, length);
++            }
++            
+             // Validate each event's parameters using the same comprehensive checks
+             VeriTixTypes.EventCreationParams calldata params = paramsArray[i];
+             
+@@ -250,6 +266,16 @@ contract VeriTixFactory is IVeriTixFactory, Ownable, ReentrancyGuard {
+         return eventContracts;
+     }
+     
++    /**
++     * @dev Estimate gas required for batch creation
++     * @param batchSize Number of events in batch
++     * @return estimatedGas Total estimated gas consumption
++     */
++    function estimateBatchGas(uint256 batchSize) external pure returns (uint256 estimatedGas) {
++        return batchSize * ESTIMATED_GAS_PER_EVENT + GAS_BUFFER;
++    }
++    
+     // ============ EVENT DISCOVERY ============
+     
+     /**
+--- a/foundry/src/interfaces/IVeriTixFactory.sol
++++ b/foundry/src/interfaces/IVeriTixFactory.sol
+@@ -45,6 +45,8 @@ interface IVeriTixFactory {
+     error InvalidFeeRecipient();
+     error NoFeesToWithdraw();
+     error FeeWithdrawalFailed();
++    error InsufficientGasForBatch(uint256 available, uint256 required);
++    error InsufficientGasRemaining(uint256 processed, uint256 total);
+ 
+     // ============ EVENTS ============
+ 
+@@ -90,6 +92,13 @@ interface IVeriTixFactory {
+         returns (address[] memory eventContracts);
+ 
+     /**
++     * @dev Estimate gas required for batch creation
++     * @param batchSize Number of events in batch
++     * @return estimatedGas Total estimated gas consumption
++     */
++    function estimateBatchGas(uint256 batchSize) external pure returns (uint256 estimatedGas);
++
++    /**

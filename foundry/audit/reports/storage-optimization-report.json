@@ -1,0 +1,354 @@
+{
+  "metadata": {
+    "generated_at": "2025-08-27T12:42:28.122Z",
+    "version": "1.0.0",
+    "analyzer": "VeriTix Storage Optimization Analyzer"
+  },
+  "summary": {
+    "total_optimizations": 5,
+    "high_priority": 2,
+    "medium_priority": 2,
+    "low_priority": 1,
+    "estimated_total_savings": 121900
+  },
+  "optimizations": [
+    {
+      "type": "STRUCT_PACKING",
+      "target": "Event State Variables",
+      "priority": "MEDIUM",
+      "current": {
+        "totalSlots": 8,
+        "slotDetails": [
+          {
+            "usage": 32,
+            "fields": [
+              "maxSupply"
+            ],
+            "wastedSpace": 0
+          },
+          {
+            "usage": 32,
+            "fields": [
+              "ticketPrice"
+            ],
+            "wastedSpace": 0
+          },
+          {
+            "usage": 20,
+            "fields": [
+              "organizer"
+            ],
+            "wastedSpace": 12
+          },
+          {
+            "usage": 32,
+            "fields": [
+              "maxResalePercent"
+            ],
+            "wastedSpace": 0
+          },
+          {
+            "usage": 32,
+            "fields": [
+              "organizerFeePercent"
+            ],
+            "wastedSpace": 0
+          },
+          {
+            "usage": 32,
+            "fields": [
+              "_currentTokenId"
+            ],
+            "wastedSpace": 0
+          },
+          {
+            "usage": 32,
+            "fields": [
+              "_totalSupply"
+            ],
+            "wastedSpace": 0
+          },
+          {
+            "usage": 1,
+            "fields": [
+              "cancelled"
+            ],
+            "wastedSpace": 31
+          }
+        ],
+        "wastedSpace": 43
+      },
+      "optimized": {
+        "totalSlots": 2,
+        "slotDetails": [
+          {
+            "usage": 36,
+            "fields": [
+              "organizer",
+              "ticketPrice"
+            ]
+          },
+          {
+            "usage": 16,
+            "fields": [
+              "maxSupply",
+              "_currentTokenId",
+              "_totalSupply",
+              "maxResalePercent",
+              "organizerFeePercent",
+              "cancelled"
+            ]
+          }
+        ],
+        "wastedSpace": 0
+      },
+      "savings": {
+        "storageSlots": 6,
+        "deploymentGas": 120000,
+        "writeOperationGas": 30000,
+        "readOperationGas": 1200
+      },
+      "implementation": "// Optimized storage layout:\n// Slot 0: address organizer, uint128 ticketPrice\n// Slot 1: uint32 maxSupply, uint32 _currentTokenId, uint32 _totalSupply, uint16 maxResalePercent, uint8 organizerFeePercent, bool cancelled\n\n// Implementation:\naddress organizer;\nuint128 // OPTIMIZED: ticketPrice;\nuint32 // OPTIMIZED: maxSupply;\nuint32 // OPTIMIZED: _currentTokenId;\nuint32 // OPTIMIZED: _totalSupply;\nuint16 // OPTIMIZED: maxResalePercent;\nuint8 // OPTIMIZED: organizerFeePercent;\nbool cancelled;\n",
+      "risks": [
+        "Reduced maximum values for some fields (uint32 vs uint256)",
+        "Need to validate that reduced ranges are sufficient",
+        "Potential overflow risks if not properly validated"
+      ],
+      "validation": {
+        "maxSupply": "uint32 max: 4,294,967,295 (sufficient for ticket supply)",
+        "ticketPrice": "uint128 max: ~3.4e38 wei (sufficient for any reasonable ticket price)",
+        "maxResalePercent": "uint16 max: 65,535 (sufficient for percentage values)",
+        "organizerFeePercent": "uint8 max: 255 (sufficient for percentage values)"
+      }
+    },
+    {
+      "type": "MAPPING_PACKING",
+      "target": "lastPricePaid and checkedIn mappings",
+      "priority": "LOW",
+      "description": "Combine related mappings into a single struct mapping",
+      "current": {
+        "mappings": [
+          "mapping(uint256 => uint256) lastPricePaid",
+          "mapping(uint256 => bool) checkedIn"
+        ],
+        "storageReads": 2,
+        "storageWrites": 2
+      },
+      "optimized": {
+        "mapping": "mapping(uint256 => TicketData) ticketData",
+        "struct": "struct TicketData { uint256 lastPricePaid; bool checkedIn; }",
+        "storageReads": 1,
+        "storageWrites": 1
+      },
+      "savings": {
+        "gasPerRead": 2100,
+        "gasPerWrite": 5000,
+        "description": "Savings when accessing both values together"
+      },
+      "implementation": "\n          struct TicketData {\n              uint256 lastPricePaid;\n              bool checkedIn;\n          }\n          \n          mapping(uint256 => TicketData) public ticketData;\n          \n          // Usage:\n          ticketData[tokenId] = TicketData({\n              lastPricePaid: price,\n              checkedIn: false\n          });\n        ",
+      "tradeoffs": [
+        "Increased gas cost when accessing only one field",
+        "More complex code structure",
+        "Potential for unused storage slots in struct"
+      ]
+    },
+    {
+      "type": "FUNCTION_OPTIMIZATION",
+      "target": "mintTicket function",
+      "priority": "HIGH",
+      "current": {
+        "gasEstimate": 85000,
+        "operations": [
+          "Multiple immutable variable reads",
+          "Storage writes for _currentTokenId and _totalSupply",
+          "Mapping write for lastPricePaid",
+          "ERC721 _safeMint call",
+          "Event emission"
+        ]
+      },
+      "optimizations": [
+        {
+          "technique": "Cache immutable values",
+          "description": "Cache frequently accessed immutable values in local variables",
+          "savings": 300,
+          "implementation": "\n              uint256 _ticketPrice = ticketPrice;\n              uint256 _maxSupply = maxSupply;\n              // Use cached values instead of direct access\n            "
+        },
+        {
+          "technique": "Unchecked arithmetic",
+          "description": "Use unchecked blocks for safe arithmetic operations",
+          "savings": 200,
+          "implementation": "\n              unchecked {\n                  tokenId = ++currentId;\n                  _currentTokenId = currentId;\n                  _totalSupply++;\n              }\n            "
+        },
+        {
+          "technique": "Optimize storage writes",
+          "description": "Minimize storage operations and combine where possible",
+          "savings": 500,
+          "implementation": "\n              // Combine related storage updates\n              // Use single SSTORE for multiple related values\n            "
+        }
+      ],
+      "totalSavings": 1000,
+      "optimizedGasEstimate": 84000
+    },
+    {
+      "type": "FUNCTION_OPTIMIZATION",
+      "target": "resaleTicket function",
+      "priority": "HIGH",
+      "current": {
+        "gasEstimate": 95000,
+        "operations": [
+          "Multiple validation checks",
+          "Price calculation",
+          "Transfer execution",
+          "ETH transfers to seller and organizer",
+          "Storage updates"
+        ]
+      },
+      "optimizations": [
+        {
+          "technique": "Early validation",
+          "description": "Perform cheapest validations first to fail fast",
+          "savings": 200,
+          "implementation": "\n              // Check payment amount first (cheapest check)\n              if (msg.value != price || price == 0) {\n                  revert IncorrectPayment(msg.value, price);\n              }\n            "
+        },
+        {
+          "technique": "Cache calculations",
+          "description": "Cache expensive calculations to avoid repetition",
+          "savings": 300,
+          "implementation": "\n              uint256 maxPrice = VeriTixTypes.calculateMaxResalePrice(_ticketPrice, _maxResalePercent);\n              uint256 organizerFee = VeriTixTypes.calculateOrganizerFee(price, _organizerFeePercent);\n            "
+        },
+        {
+          "technique": "Optimize transfer logic",
+          "description": "Minimize state changes during transfers",
+          "savings": 400,
+          "implementation": "\n              // Batch state changes before external calls\n              // Use more efficient transfer patterns\n            "
+        }
+      ],
+      "totalSavings": 900,
+      "optimizedGasEstimate": 94100
+    },
+    {
+      "type": "BATCH_GAS_ANALYSIS",
+      "target": "batchCreateEvents function",
+      "priority": "MEDIUM",
+      "gasLimitAnalysis": {
+        "blockGasLimit": 30000000,
+        "safetyBuffer": 5000000,
+        "availableGas": 25000000,
+        "estimatedGasPerEvent": 180000,
+        "maxSafeBatchSize": 138,
+        "recommendedMaxBatch": 50,
+        "dosRiskAnalysis": {
+          "riskLevel": "MEDIUM",
+          "description": "Large batches could approach gas limits",
+          "mitigations": [
+            "Implement batch size limits (max 50 events)",
+            "Add gas estimation before batch execution",
+            "Provide batch splitting recommendations to users",
+            "Implement progressive batch processing"
+          ]
+        }
+      },
+      "optimizations": [
+        {
+          "technique": "Batch size validation",
+          "implementation": "\n            if (paramsArray.length > MAX_BATCH_SIZE) {\n                revert BatchSizeTooLarge(paramsArray.length, MAX_BATCH_SIZE);\n            }\n          ",
+          "gasSavings": "Prevents failed transactions"
+        },
+        {
+          "technique": "Gas estimation",
+          "implementation": "\n            uint256 estimatedGas = paramsArray.length * ESTIMATED_GAS_PER_EVENT;\n            if (gasleft() < estimatedGas + GAS_BUFFER) {\n                revert InsufficientGasForBatch();\n            }\n          ",
+          "gasSavings": "Prevents partial batch failures"
+        }
+      ]
+    }
+  ],
+  "recommendations": [
+    {
+      "priority": "HIGH",
+      "title": "Function-Level Gas Optimizations",
+      "description": "Implement immediate gas savings in high-frequency functions",
+      "actions": [
+        "Cache immutable variables in mintTicket and resaleTicket functions",
+        "Use unchecked arithmetic for safe operations",
+        "Optimize validation order for early failure",
+        "Minimize storage operations"
+      ],
+      "estimated_savings": "1000-2000 gas per function call",
+      "implementation_effort": "Low"
+    },
+    {
+      "priority": "MEDIUM",
+      "title": "Storage Layout Optimization",
+      "description": "Optimize struct packing for deployment and storage costs",
+      "actions": [
+        "Implement optimized Event struct with packed fields",
+        "Validate that reduced field sizes are sufficient",
+        "Update all related functions to handle new types",
+        "Add overflow protection where needed"
+      ],
+      "estimated_savings": "60,000-100,000 gas per deployment",
+      "implementation_effort": "Medium"
+    },
+    {
+      "priority": "MEDIUM",
+      "title": "Batch Operation Safety",
+      "description": "Prevent DoS attacks and failed transactions in batch operations",
+      "actions": [
+        "Implement batch size limits",
+        "Add gas estimation before batch execution",
+        "Provide user guidance on optimal batch sizes",
+        "Implement progressive batch processing"
+      ],
+      "estimated_savings": "Prevents failed transactions and gas waste",
+      "implementation_effort": "Low"
+    },
+    {
+      "priority": "LOW",
+      "title": "Mapping Optimization",
+      "description": "Combine related mappings for better access patterns",
+      "actions": [
+        "Create TicketData struct for combined ticket information",
+        "Update functions to use combined mapping",
+        "Benchmark performance impact",
+        "Consider access pattern implications"
+      ],
+      "estimated_savings": "2000-5000 gas when accessing multiple fields",
+      "implementation_effort": "High"
+    }
+  ],
+  "implementation_guide": {
+    "phase1": {
+      "title": "Immediate Optimizations (1-2 days)",
+      "tasks": [
+        "Implement function-level caching optimizations",
+        "Add unchecked arithmetic blocks",
+        "Optimize validation order",
+        "Add batch size limits"
+      ]
+    },
+    "phase2": {
+      "title": "Storage Optimizations (3-5 days)",
+      "tasks": [
+        "Design optimized struct layout",
+        "Implement new storage structure",
+        "Update all related functions",
+        "Add comprehensive testing"
+      ]
+    },
+    "phase3": {
+      "title": "Advanced Optimizations (5-7 days)",
+      "tasks": [
+        "Implement mapping optimizations",
+        "Add gas estimation features",
+        "Optimize batch processing",
+        "Performance benchmarking"
+      ]
+    },
+    "testing_requirements": [
+      "Gas consumption benchmarks before and after",
+      "Functional testing for all optimized functions",
+      "Edge case testing for new data types",
+      "Integration testing with existing contracts"
+    ]
+  }
+}

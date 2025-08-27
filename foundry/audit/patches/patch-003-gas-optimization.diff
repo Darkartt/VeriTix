@@ -1,0 +1,90 @@
+--- a/foundry/src/VeriTixEvent.sol
++++ b/foundry/src/VeriTixEvent.sol
+@@ -20,17 +20,17 @@ contract VeriTixEvent is ERC721, Ownable, ReentrancyGuard, IVeriTixEvent {
+ 
+     // ============ STATE VARIABLES ============
+ 
+-    /// @dev Maximum number of tickets that can be minted for this event
+-    uint256 public immutable maxSupply;
+-
+-    /// @dev Face value price per ticket in wei
+-    uint256 public immutable ticketPrice;
+-
+-    /// @dev Address of the event organizer (also the contract owner)
++    // Slot 0: address (20 bytes) + uint128 (16 bytes) = 36 bytes
+     address public immutable organizer;
++    uint128 public immutable ticketPrice;
+ 
+-    /// @dev Maximum resale percentage (e.g., 110 = 110% of face value)
+-    uint256 public immutable maxResalePercent;
++    // Slot 1: Multiple packed fields (32 bytes total)
++    uint32 public immutable maxSupply;
++    uint32 private _currentTokenId;
++    uint32 private _totalSupply;
++    uint16 public immutable maxResalePercent;
++    uint8 public immutable organizerFeePercent;
++    bool public cancelled;
+ 
+     /// @dev Organizer fee percentage on resales (e.g., 5 = 5%)
+     uint256 public immutable organizerFeePercent;
+@@ -38,15 +38,6 @@ contract VeriTixEvent is ERC721, Ownable, ReentrancyGuard, IVeriTixEvent {
+     /// @dev Base URI for token metadata
+     string private _baseTokenURI;
+ 
+-    /// @dev Current number of tickets minted
+-    uint256 private _currentTokenId;
+-
+-    /// @dev Current number of tickets in circulation (minted - burned)
+-    uint256 private _totalSupply;
+-
+-    /// @dev Whether the event has been cancelled
+-    bool public cancelled;
+-
+     /// @dev Mapping from token ID to the last price paid for that ticket
+     mapping(uint256 => uint256) public lastPricePaid;
+ 
+@@ -118,15 +109,25 @@ contract VeriTixEvent is ERC721, Ownable, ReentrancyGuard, IVeriTixEvent {
+             );
+         }
+ 
+-        maxSupply = maxSupply_;
+-        ticketPrice = ticketPrice_;
++        // Validate packed field ranges
++        if (ticketPrice_ > type(uint128).max) {
++            revert TicketPriceTooHigh();
++        }
++        if (maxSupply_ > type(uint32).max) {
++            revert MaxSupplyTooHigh();
++        }
++        if (maxResalePercent_ > type(uint16).max) {
++            revert MaxResalePercentTooHigh();
++        }
++        if (organizerFeePercent_ > type(uint8).max) {
++            revert OrganizerFeePercentTooHigh();
++        }
++
+         organizer = organizer_;
+-        
+-        // Set minimum resale price to 95% of face value
+-        minResalePrice = (ticketPrice_ * 95) / 100;
+-        maxResalePercent = maxResalePercent_;
+-        organizerFeePercent = organizerFeePercent_;
++        ticketPrice = uint128(ticketPrice_);
++        maxSupply = uint32(maxSupply_);
++        maxResalePercent = uint16(maxResalePercent_);
++        organizerFeePercent = uint8(organizerFeePercent_);
+         _baseTokenURI = baseURI_;
+         _currentTokenId = 0;
+         _totalSupply = 0;
+--- a/foundry/src/interfaces/IVeriTixEvent.sol
++++ b/foundry/src/interfaces/IVeriTixEvent.sol
+@@ -47,6 +47,10 @@ interface IVeriTixEvent is IERC165 {
+     error EventNotCancelled();
+     error PurchaseLimitExceeded(address buyer, uint256 limit);
+     error BelowMinimumResalePrice(uint256 price, uint256 minimum);
++    error TicketPriceTooHigh();
++    error MaxSupplyTooHigh();
++    error MaxResalePercentTooHigh();
++    error OrganizerFeePercentTooHigh();
+ 
+     // ============ EVENTS ============

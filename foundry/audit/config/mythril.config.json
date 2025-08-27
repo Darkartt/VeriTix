@@ -1,0 +1,49 @@
+{
+  "analysis": {
+    "execution_timeout": 3600,
+    "create_timeout": 120,
+    "max_depth": 50,
+    "call_depth_limit": 10,
+    "loop_bound": 4,
+    "solver_timeout": 10000,
+    "parallel_solving": true,
+    "pruning_factor": 1
+  },
+  "output": {
+    "format": "json",
+    "output_dir": "./audit/reports/mythril/",
+    "verbose": true
+  },
+  "modules": [
+    "ether_thief",
+    "suicide",
+    "arbitrary_jump",
+    "arbitrary_write",
+    "delegatecall",
+    "dependence_on_predictable_vars",
+    "deprecated_ops",
+    "ether_send",
+    "exceptions",
+    "external_calls",
+    "integer",
+    "multiple_sends",
+    "state_change_external_calls",
+    "unchecked_retval"
+  ],
+  "contract_filters": {
+    "include": [
+      "VeriTix",
+      "VeriTixFactory", 
+      "VeriTixEvent"
+    ],
+    "exclude": [
+      "Test",
+      "Mock",
+      "Counter"
+    ]
+  },
+  "vulnerability_filters": {
+    "severity_threshold": "Low",
+    "exclude_patterns": []
+  }
+}
