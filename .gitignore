@@ -38,6 +38,7 @@ foundry/cache/
 foundry/out/
 foundry/broadcast/
 foundry/lib/
+foundry/audit/
 
 # Logs
 *.log
