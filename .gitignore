@@ -40,6 +40,34 @@ foundry/broadcast/
 foundry/lib/
 foundry/audit/
 
+# Generated documentation and reports
+foundry/DEPLOYMENT*.md
+foundry/SECURITY_*.md
+foundry/VERITIX_*.md
+foundry/**/*-report*.md
+foundry/**/*-analysis*.md
+foundry/**/*-summary*.md
+foundry/**/*-documentation*.md
+foundry/**/*-certification*.md
+foundry/**/*-compliance*.md
+foundry/**/*-requirements*.md
+foundry/**/*-remediation*.md
+foundry/**/*-foundation*.md
+foundry/**/*-vulnerability*.md
+foundry/**/*-attack*.md
+foundry/**/*-security*.md
+foundry/**/*-optimization*.md
+foundry/**/*-flow*.md
+foundry/**/*-control*.md
+foundry/**/*-reentrancy*.md
+foundry/**/*-findings*.md
+
+# Generated JSON and patch files
+foundry/**/*.json
+foundry/**/*.diff
+!foundry/foundry.toml
+!foundry/package.json
+
 # Logs
 *.log
 logs/
